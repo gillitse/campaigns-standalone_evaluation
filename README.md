@@ -1,0 +1,634 @@
+[campaigns-standalone-analysis.index.html](https://github.com/user-attachments/files/28306527/campaigns-standalone-analysis.index.html)
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>monday Campaigns: Standalone analysis &amp; evaluation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    :root {
+      --text-display: 10.5vmin;
+      --text-h1: 8vmin;
+      --text-h2: 6vmin;
+      --text-h3: 4vmin;
+      --text-h4: 3vmin;
+      --text-body: 2.2vmin;
+      --text-body-sm: 1.8vmin;
+      --text-caption: 1.4vmin;
+      --weight-light: 400;
+      --weight-regular: 400;
+      --weight-medium: 600;
+      --weight-semibold: 600;
+      --leading-tight: 1.1;
+      --leading-snug: 1.3;
+      --leading-normal: 1.5;
+      --leading-relaxed: 1.7;
+      --color-bg: #000000;
+      --color-surface: #232427;
+      --color-surface-alt: #2D3035;
+      --color-text: #ffffff;
+      --color-text-secondary: #c3ced8;
+      --color-text-muted: #a0a0a0;
+      --color-purple: #6164ff;
+      --color-purple-light: #8A99FF;
+      --color-red: #ff3d57;
+      --color-yellow: #ffcb00;
+      --color-green: #00c875;
+      --color-border: rgba(255, 255, 255, 0.15);
+      --radius-xs: 0.5vmin;
+      --radius-sm: 1vmin;
+      --radius-md: 2vmin;
+      --radius-lg: 3vmin;
+      --radius-full: 999px;
+      --space-1: 0.5vmin;
+      --space-2: 1vmin;
+      --space-3: 1.5vmin;
+      --space-4: 2vmin;
+      --space-5: 3vmin;
+      --space-6: 4vmin;
+      --space-7: 5vmin;
+      --space-8: 6vmin;
+      --space-9: 8vmin;
+      --space-10: 10vmin;
+      --slide-padding-y: 7vmin;
+      --slide-padding-x: 9vmin;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      margin: 0; padding: 0;
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+    }
+
+    body { display: flex; justify-content: center; align-items: center; }
+    h1, h2, h3, h4, h5, h6 { margin: 0; line-height: var(--leading-tight); }
+    html, body { height: auto; min-height: 100vh; overflow: hidden; }
+
+    .slide-container {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      max-height: 100vh;
+      max-width: 100vw;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      box-sizing: border-box;
+      overflow: hidden;
+      padding: var(--slide-padding-y) var(--slide-padding-x);
+    }
+
+    .slide-container:not(.slide-active) { display: none !important; }
+
+    .tmpl-cover.slide-active {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .tmpl-twocol.slide-active {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-9);
+      align-items: center;
+    }
+
+    .tmpl-header-split.slide-active {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    .tmpl-3col.slide-active {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+
+    /* Stat blocks */
+    .stat-block { display: flex; flex-direction: column; gap: var(--space-1); }
+    .stat-value { font-size: var(--text-h1); font-weight: var(--weight-medium); line-height: 1; letter-spacing: -0.02em; }
+    .stat-label { font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: var(--leading-snug); }
+
+    /* Donut */
+    .donut-chart {
+      border-radius: 50%;
+      flex-shrink: 0;
+      -webkit-mask: radial-gradient(closest-side, transparent 54%, black 55%);
+      mask: radial-gradient(closest-side, transparent 54%, black 55%);
+    }
+    .donut-wrap { position: relative; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .donut-center { position: absolute; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; }
+    .donut-center-value { font-size: 4.8vmin; font-weight: var(--weight-medium); line-height: 1; }
+    .donut-center-label { font-size: var(--text-caption); color: var(--color-text-muted); }
+
+    .pie-legend { display: flex; flex-direction: column; gap: var(--space-3); }
+    .pie-legend-item { display: flex; align-items: center; gap: var(--space-2); }
+    .pie-legend-dot { width: 1.2vmin; height: 1.2vmin; border-radius: var(--radius-xs); flex-shrink: 0; }
+    .pie-legend-label { font-size: var(--text-body-sm); color: var(--color-text-secondary); flex: 1; }
+    .pie-legend-value { font-size: var(--text-body-sm); font-weight: var(--weight-semibold); color: var(--color-text); padding-left: var(--space-3); }
+
+    /* Compare panels */
+    .compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); flex: 1; min-height: 0; }
+    .compare-panel { background-color: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-5) var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); }
+    .compare-panel-purple { background-color: var(--color-purple); }
+    .panel-tag { font-size: var(--text-caption); font-weight: 600; background: rgba(255,255,255,0.15); display: inline-block; padding: var(--space-1) var(--space-3); border-radius: var(--radius-full); color: var(--color-text); width: fit-content; }
+    .panel-hero-number { font-size: var(--text-h1); font-weight: 600; line-height: 1; }
+    .panel-hero-label { font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: var(--leading-snug); }
+    .compare-panel-purple .panel-hero-label { color: rgba(255,255,255,0.8); }
+    .metric-row { display: flex; align-items: baseline; gap: var(--space-2); padding: var(--space-2) 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .metric-row:last-child { border-bottom: none; }
+    .metric-val { font-size: var(--text-h4); font-weight: 600; line-height: 1; flex-shrink: 0; }
+    .metric-desc { font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: var(--leading-snug); }
+    .compare-panel-purple .metric-desc { color: rgba(255,255,255,0.8); }
+    .compare-panel-purple .metric-row { border-bottom-color: rgba(255,255,255,0.2); }
+
+    /* Insight cards */
+    .cards-row { display: flex; gap: var(--space-5); flex: 1; min-height: 0; }
+    .insight-card { flex: 1; background-color: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-5) var(--space-6); display: flex; flex-direction: column; gap: var(--space-3); }
+    .insight-num { font-size: var(--text-h1); font-weight: 600; line-height: 1; }
+    .insight-headline { font-size: var(--text-h4); font-weight: 600; line-height: var(--leading-snug); }
+    .insight-body { font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: var(--leading-relaxed); }
+    .insight-data { font-size: var(--text-body-sm); color: var(--color-text-muted); line-height: var(--leading-normal); margin-top: auto; }
+
+    /* Slide header */
+    .slide-header { display: flex; flex-direction: column; gap: var(--space-2); }
+    .slide-title { font-size: var(--text-h3); font-weight: 600; line-height: var(--leading-tight); color: var(--color-text); }
+    .slide-eyebrow { font-size: var(--text-caption); color: var(--color-purple-light); font-weight: 400; }
+
+    /* Highlights */
+    .hl-yellow { color: var(--color-yellow); }
+    .hl-green  { color: var(--color-green); }
+    .hl-red    { color: var(--color-red); }
+    .hl-purple { color: var(--color-purple-light); }
+
+    .monday-logo { height: 4vmin; width: auto; }
+    .logo-container { position: absolute; bottom: var(--space-7); left: 50%; transform: translateX(-50%); }
+
+    html, body, h1, h2, h3, h4, h5, h6, p, span, div, li, a { font-family: 'Poppins', sans-serif !important; }
+    .slide-container, .slide-container * { letter-spacing: normal !important; }
+    em, i { font-style: normal !important; }
+
+    /* ARR stat row */
+    .arr-stat-row { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-radius: var(--radius-sm); }
+    .arr-stat-row:nth-child(odd) { background-color: var(--color-surface-alt); }
+    .arr-color-dot { width: 1.2vmin; height: 1.2vmin; border-radius: 50%; flex-shrink: 0; }
+    .arr-label { flex: 1; font-size: var(--text-body-sm); color: var(--color-text-secondary); }
+    .arr-accounts { font-size: var(--text-caption); color: var(--color-text-muted); flex-shrink: 0; min-width: 8vmin; text-align: right; }
+    .arr-avg { font-size: var(--text-caption); color: var(--color-text-muted); flex-shrink: 0; min-width: 6vmin; text-align: right; }
+    .arr-value { font-size: var(--text-h4); font-weight: 600; flex-shrink: 0; min-width: 6vmin; text-align: right; }
+
+    /* Callout bar */
+    .callout-bar { background-color: var(--color-surface); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-5); display: flex; align-items: center; gap: var(--space-3); }
+    .callout-accent { width: 0.5vmin; height: 3.5vmin; background-color: var(--color-yellow); border-radius: var(--radius-full); flex-shrink: 0; }
+    .callout-text { font-size: var(--text-body-sm); color: var(--color-text-secondary); line-height: var(--leading-snug); }
+    .callout-text strong { color: var(--color-text); font-weight: 600; }
+
+    /* Growth trend cards */
+    .trend-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); flex: 1; min-height: 0; }
+    .trend-card { background-color: var(--color-surface); border-radius: var(--radius-md); padding: var(--space-5) var(--space-5); display: flex; flex-direction: column; gap: var(--space-3); position: relative; overflow: hidden; }
+    .trend-card-declining { border-top: 0.5vmin solid var(--color-red); }
+    .trend-card-growing { border-top: 0.5vmin solid var(--color-green); }
+    .trend-badge { display: inline-flex; align-items: center; gap: var(--space-1); font-size: var(--text-caption); font-weight: 600; padding: var(--space-1) var(--space-2); border-radius: var(--radius-full); width: fit-content; }
+    .badge-declining { background: rgba(255,61,87,0.15); color: var(--color-red); }
+    .badge-growing { background: rgba(0,200,117,0.15); color: var(--color-green); }
+    .trend-pct { font-size: 6.5vmin; font-weight: 600; line-height: 1; }
+    .trend-motion { font-size: var(--text-body-sm); font-weight: 600; color: var(--color-text); line-height: var(--leading-snug); }
+    .trend-meta { font-size: var(--text-caption); color: var(--color-text-muted); line-height: var(--leading-normal); margin-top: auto; }
+    .bar-track { width: 100%; height: 0.6vmin; background: rgba(255,255,255,0.1); border-radius: var(--radius-full); margin-top: var(--space-2); overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: var(--radius-full); }
+
+    @keyframes chartFadeUp {
+      from { opacity: 0; transform: translateY(1.5vmin); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: chartFadeUp 0.5s ease-out both; }
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.12s; }
+    .delay-3 { animation-delay: 0.19s; }
+    .delay-4 { animation-delay: 0.26s; }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       SLIDE 1 — COVER
+  ============================================================ -->
+  <div class="slide-container tmpl-cover slide-1" data-slide-index="0">
+    <div style="display:flex; flex-direction:column; align-items:center; gap:var(--space-5); text-align:center; max-width:70%;">
+      <div style="background:rgba(97,100,255,0.15); border-radius:var(--radius-full); padding:var(--space-2) var(--space-5);">
+        <span style="font-size:var(--text-body-sm); color:var(--color-purple-light); font-weight:400;">PMM Analysis — May 2026</span>
+      </div>
+      <h1 style="font-size:var(--text-h1); font-weight:600; line-height:var(--leading-tight); color:var(--color-text);">
+        monday Campaigns:<br><span class="hl-yellow">Standalone analysis &amp; evaluation</span>
+      </h1>
+      <p style="font-size:var(--text-h4); color:var(--color-text-secondary); line-height:var(--leading-snug); margin:0; font-weight:400;">
+        What the data tells us — ARR, growth trajectory, and cross-sell signals
+      </p>
+      <p style="font-size:var(--text-body-sm); color:var(--color-text-muted); margin:0;">Snapshot: May 26, 2026 &nbsp;·&nbsp; Trend: Dec 2025 – May 2026 &nbsp;·&nbsp; 979 paying Campaigns accounts</p>
+    </div>
+    <div class="logo-container">
+      <svg class="monday-logo" width="282" height="50" viewBox="0 0 282 50" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.68474 35.762C3.70108 35.7602 1.87466 34.7272 0.914601 33.0642C-0.0454546 31.4011 0.0120846 29.3698 1.06488 27.7591L10.8879 12.7341C11.8969 11.0981 13.7529 10.1154 15.7356 10.1675C17.7182 10.2196 19.5153 11.2982 20.4292 12.9847C21.3431 14.6713 21.2298 16.7001 20.1335 18.2836L10.3163 33.3086C9.31775 34.8373 7.56703 35.7647 5.68474 35.762Z" fill="#FB275D"/><path d="M22.4209 35.7618C20.4405 35.7601 18.6171 34.7296 17.6586 33.0704C16.7001 31.4113 16.7576 29.3849 17.8086 27.778L27.6127 12.7887C28.6058 11.1288 30.4684 10.1226 32.4659 10.1668C34.4635 10.211 36.2755 11.2985 37.1875 13.0005C38.0995 14.7025 37.9651 16.7459 36.8373 18.325L27.0332 33.3143C26.0386 34.836 24.296 35.7607 22.4209 35.7618V35.7618Z" fill="#FFCC00"/><path d="M38.7383 35.7925C41.7384 35.7925 44.1705 33.3647 44.1705 30.3698C44.1705 27.3749 41.7384 24.947 38.7383 24.947C35.7382 24.947 33.3062 27.3749 33.3062 30.3698C33.3062 33.3647 35.7382 35.7925 38.7383 35.7925Z" fill="#00CA72"/><path d="M214.619 45.1879L219.096 34.827L209.273 11.9539H217.531L223.138 26.749L228.875 11.9539H236.786L222.617 45.1879H214.619Z" fill="white"/><path d="M191.966 11.6026C195.617 11.6026 198.181 13.2709 199.485 15.4221V11.9538H206.918V36.4513H199.485V32.983C198.138 35.1342 195.574 36.8025 191.966 36.8025C186.011 36.8025 181.317 31.8855 181.317 24.1587C181.317 16.4318 186.011 11.6026 191.966 11.6026ZM188.88 24.1587C188.88 28.066 191.357 30.2611 194.183 30.2611C197.008 30.2611 199.485 28.1099 199.485 24.2026C199.485 20.2952 197.008 18.144 194.183 18.144C191.357 18.144 188.88 20.2513 188.88 24.1587Z" fill="white"/><path d="M163.184 11.6027C166.4 11.6027 169.138 13.0954 170.616 15.3344V3.96375H178.092V36.4515H170.616V32.9393C169.312 35.1783 166.748 36.8027 163.14 36.8027C157.186 36.8027 152.491 31.8856 152.491 24.1588C152.491 16.432 157.186 11.6027 163.184 11.6027ZM160.054 24.1588C160.054 28.0661 162.532 30.2612 165.357 30.2612C168.182 30.2612 170.66 28.11 170.66 24.2027C170.66 20.2954 168.182 18.1442 165.357 18.1442C162.532 18.1442 160.054 20.2515 160.054 24.1588Z" fill="white"/><path d="M142.006 23.1489C142.006 19.8123 140.137 17.9684 137.356 17.9684C134.487 17.9684 132.661 19.8123 132.661 23.1489V36.4513H125.229V11.9538H132.661V15.2465C134.139 13.1392 136.747 11.6904 140.007 11.6904C145.657 11.6904 149.395 15.5538 149.395 22.1392V36.4513H142.006V23.1489Z" fill="white"/><path d="M109.31 37.022C102.182 37.022 96.8359 32.1927 96.8359 24.2025C96.8359 16.2123 102.312 11.383 109.441 11.383C116.569 11.383 122.045 16.2123 122.045 24.2025C122.045 32.1927 116.482 37.022 109.31 37.022ZM104.355 24.2025C104.355 28.3293 106.659 30.3049 109.31 30.3049C111.962 30.3049 114.483 28.3293 114.483 24.2025C114.483 20.0318 112.005 18.1001 109.397 18.1001C106.746 18.1001 104.355 20.0318 104.355 24.2025Z" fill="white"/><path d="M52.8496 11.9538H60.2821V15.0709C61.7164 13.0514 64.2374 11.6904 67.3668 11.6904C71.0613 11.6904 74.0169 13.3148 75.6686 16.2563C77.2768 13.666 80.2759 11.6904 83.84 11.6904C89.8381 11.6904 93.7065 15.5538 93.7065 22.1392V36.4513H86.3175V23.1489C86.3175 19.944 84.4485 18.188 81.6667 18.188C78.7981 18.188 77.016 19.944 77.016 23.1489V36.4513H69.627V23.1489C69.627 19.944 67.758 18.188 64.9763 18.188C62.1076 18.188 60.2821 19.944 60.2821 23.1489V36.4513H52.8496V11.9538Z" fill="white"/><path d="M236.725 31.4375C236.725 30.4075 236.936 29.5107 237.359 28.7473C237.782 27.9718 238.366 27.372 239.112 26.9479C239.871 26.5238 240.735 26.3117 241.705 26.3117C242.96 26.3117 243.992 26.6086 244.801 27.2023C245.621 27.7961 246.162 28.6201 246.423 29.6743H244.595C244.421 29.0685 244.079 28.5898 243.57 28.2384C243.072 27.887 242.451 27.7113 241.705 27.7113C240.735 27.7113 239.951 28.0385 239.355 28.6928C238.758 29.335 238.459 30.2499 238.459 31.4375C238.459 32.6371 238.758 33.5641 239.355 34.2184C239.951 34.8728 240.735 35.2 241.705 35.2C242.451 35.2 243.072 35.0303 243.57 34.691C244.067 34.3517 244.409 33.867 244.595 33.2369H246.423C246.15 34.2548 245.602 35.0727 244.782 35.6907C243.961 36.2966 242.935 36.5996 241.705 36.5996C240.735 36.5996 239.871 36.3875 239.112 35.9634C238.366 35.5393 237.782 34.9394 237.359 34.1639C236.936 33.3884 236.725 32.4796 236.725 31.4375Z" fill="white"/><path d="M252.871 36.5996C251.913 36.5996 251.043 36.3875 250.26 35.9634C249.489 35.5393 248.88 34.9394 248.432 34.1639C247.997 33.3763 247.779 32.4675 247.779 31.4375C247.779 30.4196 248.003 29.5229 248.451 28.7473C248.911 27.9597 249.532 27.3599 250.316 26.9479C251.099 26.5238 251.976 26.3117 252.945 26.3117C253.915 26.3117 254.792 26.5238 255.575 26.9479C256.358 27.3599 256.974 27.9536 257.421 28.7292C257.882 29.5047 258.112 30.4075 258.112 31.4375C258.112 32.4675 257.875 33.3763 257.403 34.1639C256.943 34.9394 256.315 35.5393 255.519 35.9634C254.723 36.3875 253.841 36.5996 252.871 36.5996ZM252.871 35.1454C253.48 35.1454 254.052 35.0061 254.587 34.7274C255.121 34.4487 255.55 34.0306 255.873 33.4732C256.209 32.9158 256.377 32.2372 256.377 31.4375C256.377 30.6377 256.215 29.9591 255.892 29.4017C255.569 28.8443 255.146 28.4323 254.624 28.1657C254.102 27.887 253.536 27.7476 252.927 27.7476C252.305 27.7476 251.733 27.887 251.211 28.1657C250.701 28.4323 250.291 28.8443 249.98 29.4017C249.669 29.9591 249.514 30.6377 249.514 31.4375C249.514 32.2493 249.663 32.934 249.961 33.4914C250.272 34.0488 250.682 34.4669 251.192 34.7456C251.702 35.0122 252.262 35.1454 252.871 35.1454Z" fill="white"/><path d="M232.606 36.5996C232.111 36.5996 231.701 36.439 231.376 36.1178C231.063 35.7826 230.907 35.3707 230.907 34.8819C230.907 34.3931 231.063 33.9881 231.376 33.6669C231.701 33.3318 232.111 33.1642 232.606 33.1642C233.088 33.1642 233.485 33.3318 233.798 33.6669C234.11 33.9881 234.266 34.3931 234.266 34.8819C234.266 35.3707 234.11 35.7826 233.798 36.1178C233.485 36.439 233.088 36.5996 232.606 36.5996Z" fill="white"/></svg>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 2 — ARR BREAKDOWN (updated with exact numbers + avg ARR)
+  ============================================================ -->
+  <div class="slide-container tmpl-twocol slide-2" data-slide-index="1">
+
+    <div style="display:flex; flex-direction:column; gap:var(--space-6); justify-content:center;">
+      <div class="slide-header">
+        <span class="slide-eyebrow">ARR snapshot — 979 paying Campaigns accounts · May 26, 2026</span>
+        <h2 class="slide-title">Where Campaigns ARR <span class="hl-yellow">actually lives</span></h2>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:var(--space-7);">
+        <div class="donut-wrap">
+          <div class="donut-chart" style="
+            width:22vmin; height:22vmin;
+            background: conic-gradient(
+              var(--color-purple) 0% 46.2%,
+              var(--color-green) 46.2% 92.0%,
+              var(--color-yellow) 92.0% 96.4%,
+              var(--color-red) 96.4% 100%
+            );">
+          </div>
+          <div class="donut-center">
+            <span class="donut-center-value">$1.7M</span>
+            <span class="donut-center-label">total ARR</span>
+          </div>
+        </div>
+
+        <div class="pie-legend">
+          <div class="pie-legend-item">
+            <div class="pie-legend-dot" style="background:var(--color-purple);"></div>
+            <span class="pie-legend-label">Campaigns + CRM</span>
+            <span class="pie-legend-value">46%</span>
+          </div>
+          <div class="pie-legend-item">
+            <div class="pie-legend-dot" style="background:var(--color-green);"></div>
+            <span class="pie-legend-label">Campaigns + WM + CRM</span>
+            <span class="pie-legend-value">46%</span>
+          </div>
+          <div class="pie-legend-item">
+            <div class="pie-legend-dot" style="background:var(--color-yellow);"></div>
+            <span class="pie-legend-label">Campaigns + WM only</span>
+            <span class="pie-legend-value">4%</span>
+          </div>
+          <div class="pie-legend-item">
+            <div class="pie-legend-dot" style="background:var(--color-red);"></div>
+            <span class="pie-legend-label">Standalone only</span>
+            <span class="pie-legend-value">4%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; flex-direction:column; justify-content:center; gap:var(--space-2);">
+
+      <!-- Column headers -->
+      <div style="display:flex; align-items:center; gap:var(--space-3); padding:0 var(--space-4); margin-bottom:var(--space-1);">
+        <div style="flex:1;"></div>
+        <span style="font-size:var(--text-caption); color:var(--color-text-muted); min-width:8vmin; text-align:right;">Accounts</span>
+        <span style="font-size:var(--text-caption); color:var(--color-text-muted); min-width:6vmin; text-align:right;">Avg ARR</span>
+        <span style="font-size:var(--text-caption); color:var(--color-text-muted); min-width:6vmin; text-align:right;">Total ARR</span>
+      </div>
+
+      <div class="arr-stat-row fade-up delay-1">
+        <div class="arr-color-dot" style="background:var(--color-purple);"></div>
+        <span class="arr-label">Campaigns + CRM</span>
+        <span class="arr-accounts">404</span>
+        <span class="arr-avg">$1,943</span>
+        <span class="arr-value" style="color:var(--color-purple);">$785K</span>
+      </div>
+
+      <div class="arr-stat-row fade-up delay-2">
+        <div class="arr-color-dot" style="background:var(--color-green);"></div>
+        <span class="arr-label">Campaigns + WM + CRM</span>
+        <span class="arr-accounts">400</span>
+        <span class="arr-avg">$1,946</span>
+        <span class="arr-value" style="color:var(--color-green);">$778K</span>
+      </div>
+
+      <div class="arr-stat-row fade-up delay-3">
+        <div class="arr-color-dot" style="background:var(--color-yellow);"></div>
+        <span class="arr-label">Campaigns + WM only</span>
+        <span class="arr-accounts">50</span>
+        <span class="arr-avg">$1,505</span>
+        <span class="arr-value" style="color:var(--color-yellow);">$75K</span>
+      </div>
+
+      <div class="arr-stat-row fade-up delay-4">
+        <div class="arr-color-dot" style="background:var(--color-red);"></div>
+        <span class="arr-label">Standalone only</span>
+        <span class="arr-accounts">125</span>
+        <span class="arr-avg" style="color:var(--color-red);">$485</span>
+        <span class="arr-value" style="color:var(--color-red);">$61K</span>
+      </div>
+
+      <div style="margin-top:var(--space-3);">
+        <div class="callout-bar">
+          <div class="callout-accent"></div>
+          <p class="callout-text">
+            <strong>96% of Campaigns ARR</strong> comes from suite customers. Standalone avg ARR is <strong>$485/account</strong> — vs $1,943 in suite motions. That's a 4x unit-economics gap, not just a volume gap.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 3 — GROWTH TRAJECTORY (new)
+  ============================================================ -->
+  <div class="slide-container tmpl-header-split slide-3" data-slide-index="2">
+
+    <div class="slide-header">
+      <span class="slide-eyebrow">6-month trend: Dec 2025 → May 2026 · ARR change by motion</span>
+      <h2 class="slide-title">The market is <span class="hl-red">already answering</span> the question</h2>
+    </div>
+
+    <div class="trend-grid" style="flex:1; min-height:0;">
+
+      <!-- Standalone — declining -->
+      <div class="trend-card trend-card-declining fade-up delay-1">
+        <div class="trend-badge badge-declining">↓ declining</div>
+        <div class="trend-pct" style="color:var(--color-red);">–13.4%</div>
+        <div class="trend-motion">Campaigns only</div>
+        <div style="display:flex; flex-direction:column; gap:var(--space-1);">
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-muted);">
+            <span>Dec 25</span><span>May 26</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:100%; background:rgba(255,61,87,0.3);"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-secondary);">
+            <span>$70K · 78 acc</span><span>$61K · 125 acc</span>
+          </div>
+        </div>
+        <div class="trend-meta">Pipeline: 2 opps / 1 open / 0 closed won</div>
+      </div>
+
+      <!-- CRM — growing -->
+      <div class="trend-card trend-card-growing fade-up delay-2">
+        <div class="trend-badge badge-growing">↑ growing</div>
+        <div class="trend-pct" style="color:var(--color-green);">+144.6%</div>
+        <div class="trend-motion">Campaigns + CRM</div>
+        <div style="display:flex; flex-direction:column; gap:var(--space-1);">
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-muted);">
+            <span>Dec 25</span><span>May 26</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:100%; background:var(--color-green);"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-secondary);">
+            <span>$321K · 158 acc</span><span>$785K · 404 acc</span>
+          </div>
+        </div>
+        <div class="trend-meta">Pipeline: 50 opps / 9 open / 35 closed won</div>
+      </div>
+
+      <!-- WM — growing -->
+      <div class="trend-card trend-card-growing fade-up delay-3">
+        <div class="trend-badge badge-growing">↑ growing</div>
+        <div class="trend-pct" style="color:var(--color-green);">+109.7%</div>
+        <div class="trend-motion">Campaigns + WM</div>
+        <div style="display:flex; flex-direction:column; gap:var(--space-1);">
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-muted);">
+            <span>Dec 25</span><span>May 26</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:73%; background:var(--color-green);"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-secondary);">
+            <span>$36K · 20 acc</span><span>$75K · 50 acc</span>
+          </div>
+        </div>
+        <div class="trend-meta">Pipeline: 7 opps / 3 open / 3 closed won</div>
+      </div>
+
+      <!-- WM + CRM — growing -->
+      <div class="trend-card trend-card-growing fade-up delay-4">
+        <div class="trend-badge badge-growing">↑ growing</div>
+        <div class="trend-pct" style="color:var(--color-green);">+129.4%</div>
+        <div class="trend-motion">Campaigns + WM + CRM</div>
+        <div style="display:flex; flex-direction:column; gap:var(--space-1);">
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-muted);">
+            <span>Dec 25</span><span>May 26</span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:100%; background:var(--color-purple);"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:var(--text-caption); color:var(--color-text-secondary);">
+            <span>$339K · 169 acc</span><span>$778K · 400 acc</span>
+          </div>
+        </div>
+        <div class="trend-meta">Pipeline: 75 opps / 18 open / 46 closed won · $290K open</div>
+      </div>
+
+    </div>
+
+    <div class="callout-bar" style="flex-shrink:0;">
+      <div class="callout-accent" style="background-color:var(--color-red);"></div>
+      <p class="callout-text">
+        Standalone accounts grew from 78 → 125 but ARR <strong>shrank from $70K → $61K</strong> — avg ARR per account is compressing as the cohort dilutes. Suite motions added $888K in ARR in the same period.
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SLIDE 4 — FUNNEL SIGNAL (updated)
+  ============================================================ -->
+  <div class="slide-container tmpl-header-split slide-4" data-slide-index="3">
+
+    <div class="slide-header">
+      <span class="slide-eyebrow">No-touch funnel data + SEM conversion analysis + segment breakdown</span>
+      <h2 class="slide-title">Standalone <span class="hl-yellow">attracts volume.</span> Suite <span class="hl-green">converts revenue.</span></h2>
+    </div>
+
+    <div class="compare-grid" style="flex:1; min-height:0;">
+
+      <!-- Left: Standalone -->
+      <div class="compare-panel">
+        <span class="panel-tag">Standalone motion</span>
+
+        <div>
+          <div class="panel-hero-number" style="color:var(--color-red);">$485</div>
+          <div class="panel-hero-label">avg ARR per account — 4x below suite motions</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div class="metric-row">
+            <span class="metric-val">60–70%</span>
+            <span class="metric-desc">of Campaigns sign-ups are net-new to monday</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-val">~90%</span>
+            <span class="metric-desc">via SEM — high install rate but 4x lower pay conversion than suite users</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-val">65%</span>
+            <span class="metric-desc">Small segment — lower LTV profile, no M/L/Enterprise pull</span>
+          </div>
+          <div class="metric-row" style="border-bottom:none;">
+            <span class="metric-val" style="color:var(--color-red);">2 opps</span>
+            <span class="metric-desc">total pipeline · 1 open · 0 closed won. No sales motion behind this.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Suite -->
+      <div class="compare-panel compare-panel-purple">
+        <span class="panel-tag">Suite / cross-sell motion</span>
+
+        <div>
+          <div class="panel-hero-number">$1,943</div>
+          <div class="panel-hero-label">avg ARR per account (CRM motion) — 4x standalone</div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:0;">
+          <div class="metric-row">
+            <span class="metric-val">4x</span>
+            <span class="metric-desc">higher pay conversion for existing monday users (suite context matters)</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-val">1.6%</span>
+            <span class="metric-desc">WM attach rate — 91K marketing accounts untouched. Whitespace is enormous.</span>
+          </div>
+          <div class="metric-row">
+            <span class="metric-val">7.6%</span>
+            <span class="metric-desc">CRM attach rate — highest-signal cross-sell path, strongest unit economics</span>
+          </div>
+          <div class="metric-row" style="border-bottom:none;">
+            <span class="metric-val">125 opps</span>
+            <span class="metric-desc">across suite motions · 30 open · 84 closed won · $290K+ open pipeline</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SLIDE 5 — KEY INSIGHTS (updated)
+  ============================================================ -->
+  <div class="slide-container tmpl-3col slide-5" data-slide-index="4">
+
+    <div class="slide-header">
+      <span class="slide-eyebrow">Synthesized from: ARR snapshot, 6-month trend, funnel analysis, cross-sell data</span>
+      <h2 class="slide-title">What the data tells us</h2>
+    </div>
+
+    <div class="cards-row">
+
+      <div class="insight-card fade-up delay-1">
+        <div class="insight-num" style="color:var(--color-yellow);">01</div>
+        <div class="insight-headline">Suite is where Campaigns monetizes — and accelerates</div>
+        <div class="insight-body">
+          In 6 months, suite motions added $888K in ARR. Standalone lost ARR while adding accounts — avg ARR per standalone account is compressing. The 4x unit-economics gap isn't a messaging problem. It reflects product fit: suite customers already have trust, contacts, and workflows in monday.
+        </div>
+        <div class="insight-data">$1.64M suite ARR growing 109–145% · $61K standalone ARR declining 13.4%</div>
+      </div>
+
+      <div class="insight-card fade-up delay-2">
+        <div class="insight-num" style="color:var(--color-green);">02</div>
+        <div class="insight-headline">Cross-sell is under-penetrated, not exhausted</div>
+        <div class="insight-body">
+          CRM attach rate is 7.6% and the fastest-growing motion. WM is 1.6% — against 91K marketing-active accounts. The WM+CRM motion has $290K in open pipeline alone. These aren't ceilings — they're the beginning of the curve. The capacity for expansion is far larger than current scale.
+        </div>
+        <div class="insight-data">404 CRM accounts, 400 WM+CRM accounts. Combined: 804 accounts, $1.56M ARR, 125 total opps.</div>
+      </div>
+
+      <div class="insight-card fade-up delay-3">
+        <div class="insight-num" style="color:var(--color-red);">03</div>
+        <div class="insight-headline">Standalone has signal — but the economics don't compound</div>
+        <div class="insight-body">
+          125 accounts and only 2 pipeline opps. No closed won deals. ARR declining while account count grows. 65% Small segment, avg ARR $485. Without a dedicated ICP, a pricing strategy, and a real conversion path, standalone won't self-sustain — let alone scale.
+        </div>
+        <div class="insight-data">The question isn't "does standalone have demand?" — it's "can we build economics around it that justify the investment?"</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var currentSlide = 0;
+      var slides = [];
+
+      function init() {
+        slides = document.querySelectorAll('[data-slide-index]');
+        if (slides.length === 0) return;
+        showSlide(0);
+        addNavigationUI();
+        document.addEventListener('keydown', handleKeyDown);
+        addTouchNavigation();
+      }
+
+      function showSlide(n) {
+        if (n >= slides.length) currentSlide = 0;
+        else if (n < 0) currentSlide = slides.length - 1;
+        else currentSlide = n;
+        slides.forEach(function(slide, index) {
+          slide.classList.toggle('slide-active', index === currentSlide);
+        });
+        updateCounter();
+      }
+
+      function handleKeyDown(e) {
+        switch (e.key) {
+          case 'ArrowRight': case ' ':
+            e.preventDefault(); showSlide(currentSlide + 1); break;
+          case 'ArrowLeft':
+            e.preventDefault(); showSlide(currentSlide - 1); break;
+        }
+      }
+
+      function addNavigationUI() {
+        var counter = document.createElement('div');
+        counter.id = 'slide-counter';
+        counter.style.cssText = 'position:fixed;bottom:3vmin;right:3vmin;font-family:Poppins,sans-serif;font-size:1.8vmin;color:#a0a0a0;cursor:pointer;user-select:none;padding:1vmin 2vmin;border-radius:999px;transition:all .2s ease;z-index:100;';
+        counter.addEventListener('click', jumpToSlide);
+        counter.addEventListener('mouseover', function(){ counter.style.backgroundColor='#232427'; counter.style.color='#fff'; });
+        counter.addEventListener('mouseout', function(){ counter.style.backgroundColor='transparent'; counter.style.color='#a0a0a0'; });
+        document.body.appendChild(counter);
+      }
+
+      function updateCounter() {
+        var counter = document.getElementById('slide-counter');
+        if (counter) counter.textContent = (currentSlide + 1) + ' / ' + slides.length;
+      }
+
+      function jumpToSlide() {
+        var input = prompt('Jump to slide (1–' + slides.length + '):', String(currentSlide + 1));
+        if (input !== null) {
+          var n = parseInt(input, 10);
+          if (!isNaN(n) && n >= 1 && n <= slides.length) showSlide(n - 1);
+        }
+      }
+
+      function addTouchNavigation() {
+        var startX = 0;
+        document.addEventListener('touchstart', function(e) { startX = e.changedTouches[0].screenX; });
+        document.addEventListener('touchend', function(e) {
+          var diff = startX - e.changedTouches[0].screenX;
+          if (Math.abs(diff) > 50) { diff > 0 ? showSlide(currentSlide + 1) : showSlide(currentSlide - 1); }
+        });
+      }
+
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+      else init();
+    })();
+  </script>
+</body>
+</html>
